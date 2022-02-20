@@ -1,0 +1,97 @@
+@using System.Text.Json;
+@using Daniel.Blazor.Library;
+@using Daniel.Blazor.Components;
+@using Daniel.ViewModels;
+@using Microsoft.AspNetCore.Authorization;
+@using Syncfusion.Blazor.Grids;
+@page "/ReadActionLog"
+@inherits Daniel.Blazor.Components.DanielBaseComponent;
+@namespace Daniel.Blazor.Pages
+@attribute [Authorize]
+
+
+<style type="text/css" class="cssStyles"> 
+     
+    .e-row.e-nodetail .e-detailrowcollapse { 
+        pointer-events:none; 
+    } 
+    .e-row.e-nodetail .e-detailrowcollapse .e-dtdiagonalright { 
+        display:none; 
+    } 
+</style> 
+
+<div class="mt-3">
+   <SfGrid TValue="ActionLogViewModel" AllowFiltering="true" AllowSorting="true" AllowPaging="true" EnableAltRow="true"
+      EnableHover="true" RowHeight="28" @ref="Grid">
+      <GridSortSettings AllowUnsort="true">
+         <GridSortColumns>
+            <GridSortColumn Field=@nameof(ActionLogViewModel.Date) Direction="SortDirection.Descending"></GridSortColumn>
+         </GridSortColumns>
+      </GridSortSettings>
+      <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu">
+      </GridFilterSettings>
+      <GridPageSettings PageSize="20"></GridPageSettings>
+      <GridEvents RowDataBound="OnRowDataBound" TValue="ActionLogViewModel" RowSelected="OnRowSelected" RowDeselected="OnRowDSelected"></GridEvents> 
+      <SfDataManager Adaptor="Adaptors.CustomAdaptor">
+         <DataAdaptorComponent TModel="ActionLogViewModel" Action="ActionLog/Listar"></DataAdaptorComponent>
+      </SfDataManager>
+      <GridTemplates>
+         <DetailTemplate Context="ActionLogContext">
+            @{
+               var actionLog = (ActionLogContext as ActionLogViewModel);
+               var changes = actionLog.Change.Split(";");
+            }
+            <div>
+               @foreach(string change in changes)
+               {
+                  <div>@change</div>
+               }
+            </div>
+         </DetailTemplate>
+      </GridTemplates>
+
+      <GridColumns>
+         @(new GridBuilder<ActionLogViewModel>()
+         .AddColumn(x => x.Id,width:"90px")
+         .AddColumn(x => x.Date)
+         .AddColumn(x => x.Action)
+         .AddColumn(x => x.ObjectType)
+         .AddColumn(x => x.IdRecord,width:"90px")
+         .AddColumn(x => x.IdUser,width:"90px")
+         .AddColumn(x => x.Login)         
+         .RenderColumns())
+      </GridColumns>
+   </SfGrid>
+</div>
+
+@code {
+   public ActionLogViewModel Selected{get;set;}
+
+   public SfGrid<ActionLogViewModel> Grid{get;set;}
+
+   public void OnRowDataBound(RowDataBoundEventArgs<ActionLogViewModel> args) 
+    { 
+        if(string.IsNullOrEmpty(args.Data.Change)) 
+        { 
+            // Hide and disabling the Details icon present in each row 
+            args.Row.AddClass(new string[] { "e-nodetail"}); 
+        } 
+    } 
+
+    public async Task OnRowSelected(RowSelectEventArgs<ActionLogViewModel> args)
+    {
+       if (!string.IsNullOrEmpty(args.Data.Change))
+         await Grid.ExpandCollapseDetailRowAsync(args.Data);
+
+
+    }
+    public async Task OnRowDSelected(RowDeselectEventArgs<ActionLogViewModel> args)
+    {
+       if (!string.IsNullOrEmpty(args.Data.Change))
+         await Grid.ExpandCollapseDetailRowAsync(args.Data);
+    }
+
+    
+
+
+}

@@ -1,0 +1,19 @@
+@using Syncfusion.Blazor;
+@using Syncfusion.Blazor.Data;
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+@using Daniel.Blazor.Services;
+@using static Daniel.Blazor.Pages.Index;
+@namespace Daniel.Blazor.Components
+
+@typeparam TModel;
+@inherits DataAdaptor<TModel>
+
+<CascadingValue Value="@this">
+   @ChildContent
+</CascadingValue>
+
+@code {
+ 
+
+}

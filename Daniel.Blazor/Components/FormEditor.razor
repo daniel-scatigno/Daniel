@@ -1,0 +1,114 @@
+@using Daniel.Blazor.Library;
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+@using Syncfusion.Blazor.Buttons;
+@inherits DanielBaseComponent
+@implements IFormEditor;
+@inject NavigationManager NavigationManager;
+@namespace Daniel.Blazor.Components
+@typeparam TViewModel
+
+<div class="@(InsideCard?"card":"") @CssClass">
+    <div class="@(InsideCard?"card-body pb-1":"")">
+        <div class="">
+            <EditForm Model="TValue" OnSubmit="Submit">
+                @if (ButtonPosition == ButtonPositionType.TopLeft)
+                {
+                    <div class="card-title">
+                        @ButtonsFragment
+                    </div>
+                }
+
+                <DataAnnotationsValidator />
+                @ChildContent
+
+                <ul class="validation-errors">
+                    @foreach (var tup in ValidationMessages)
+                    {
+                        <li class="validation-message">@tup</li>
+                    }
+                </ul>
+
+                @if (ButtonPosition == ButtonPositionType.BottomLeft || ButtonPosition == ButtonPositionType.BottomRight)
+                {
+                    <div class=" @(ButtonPosition == ButtonPositionType.BottomLeft ? "text-left":"text-right")">
+                        @ButtonsFragment
+                    </div>
+                }
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Yield();
+        await base.OnInitializedAsync();
+        ButtonsFragment =@<div>
+        <SfButton class="e-primary e-outline" IconCss="far fa-save" type="submit" Disabled="@(DisableButtons || DisableSave)">@(IsChild || FormFather!=null?"Incluir":"Salvar")</SfButton>
+        <SfButton class="e-primary e-outline" IconCss="fas fa-ban" type="button" Disabled="@(DisableButtons || DisableCancel)" @onclick="CancelClick">Cancelar</SfButton>
+        @CustomButtons
+    </div>;
+  if (FormFather != null)
+      FormFather.DisableButtons = true;
+}
+RenderFragment ButtonsFragment { get; set; }
+
+[Parameter]
+public RenderFragment CustomButtons { get; set; }
+public FormEditor()
+{
+
+}
+
+[Parameter]
+public ButtonPositionType ButtonPosition { get; set; }
+
+[Parameter]
+public RenderFragment ChildContent { get; set; }
+
+[Parameter]
+public TViewModel TValue { get; set; }
+
+[Parameter]
+public EventCallback CancelClick { get; set; }
+
+[Parameter]
+public EventCallback<TViewModel> AfterSave { get; set; }
+
+[Parameter]
+public EventCallback<TViewModel> BeforeSave { get; set; }
+
+[Parameter]
+public EventCallback<TViewModel> BeforeValidate { get; set; }
+
+[Parameter]
+public string CssClass { get; set; }
+
+[Parameter]
+public bool IsChild { get; set; }
+
+
+[Parameter]
+public string Controller { get; set; }
+
+[Parameter]
+public bool IsEditing { get; set; } = false;
+
+
+[Parameter]
+public string CreateMethod { get; set; } = "";
+
+[Parameter]
+public string UpdateMethod { get; set; } = "";
+
+[Parameter]
+public EventCallback<CustomErrorEventArgs<TViewModel>> CustomErrorValidation { get; set; }
+
+[Parameter]
+public bool InsideCard { get; set; } = true;
+
+private Dictionary<string, string> CustomErrors { get; set; } = new Dictionary<string, string>();
+private List<string> ValidationMessages { get; set; } = new List<string>();
+}
