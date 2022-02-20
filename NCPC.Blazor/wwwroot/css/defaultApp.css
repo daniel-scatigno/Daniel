@@ -1,0 +1,17 @@
+/* Ateração do ConformDialog */
+#sf-confirm-dialog {
+    min-width: 350px;
+    border-radius: 5px;
+}
+
+    #sf-confirm-dialog .e-dlg-content {
+        border-radius: 5px;
+    }
+
+    #sf-confirm-dialog .content-alert {
+        font-size: 0.9rem;
+        font-weight: 500;
+        width: 100%;
+        height: calc(100% - 73px);
+        min-height: 24px;
+    }

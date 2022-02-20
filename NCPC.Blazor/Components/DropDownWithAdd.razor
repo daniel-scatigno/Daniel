@@ -1,0 +1,59 @@
+@namespace NCPC.Blazor.Components
+@typeparam TModelType;
+<div class="form-group">
+   <label>@Label</label>
+   <div class="e-input-group">
+      @DropDownFragment
+      <SfButton type="button" CssClass="e-outline e-primary" @onclick="OnNewClick"><i class="fas fa-plus"></i>
+      </SfButton>
+   </div>
+   @ValidationFragment
+</div>
+
+@if (ShowDialog && FormObject != null)
+{
+   <SfDialog CssClass="rounded-3" @bind-Visible="@ShowDialog" IsModal="true" Target="body">
+      <DialogTemplates>
+         <Content>
+            <FormEditor TViewModel="TModelType" TValue="FormObject" CancelClick="@(()=>{ ShowDialog=false;})"
+            AfterSave="OnFormSaved" BeforeSave="OnBeforeSave">
+               @FormFragment
+            </FormEditor>
+         </Content>
+      </DialogTemplates>
+      <DialogAnimationSettings Effect="DialogEffect.Zoom"></DialogAnimationSettings>
+   </SfDialog>
+}
+@code {
+   [Parameter]
+   public RenderFragment DropDownFragment { get; set; }
+
+   [Parameter]
+   public RenderFragment FormFragment { get; set; }
+
+   [Parameter]
+   public RenderFragment ValidationFragment { get; set; }
+
+   [Parameter]
+   public string Label { get; set; }
+
+   public bool ShowDialog { get; set; }
+
+   public TModelType FormObject { get; set; }
+
+   public async Task OnNewClick()
+   {
+      FormObject = new();
+      ShowDialog = true;
+   }
+
+   public async Task OnFormSaved(TModelType model)
+   {
+
+
+   }
+
+   public async Task OnBeforeSave()
+   { }
+
+}
